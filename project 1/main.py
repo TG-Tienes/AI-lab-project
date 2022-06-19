@@ -28,7 +28,7 @@ def readInputFile(fname):
     return pixel, startGoal, numOfPoly, polyList
 
 # draw grid based on width, height
-def drawGrid(height, width):
+def drawGrid(height, width, startGoal):
     tur = turtle.Turtle()
     tur.fillcolor('cyan')
 
@@ -112,6 +112,18 @@ def drawGrid(height, width):
 
         x += 35
 
+    fillPixel(startGoal[0], startGoal[1], "yellow")
+    tur.up()
+    tur.setpos(-400 + startGoal[0] * 35 + 18, -300 + startGoal[1] * 35 + 5)
+    tur.write('S', align="center",font=('Arial', 18, 'bold'))
+    tur.down()
+
+    fillPixel(startGoal[2], startGoal[3], "yellow")
+    tur.up()
+    tur.setpos(-400 + startGoal[2] * 35 + 18, -300 + startGoal[3] * 35 + 5)
+    tur.write('G', align="center",font=('Arial', 18, 'bold'))
+    tur.down()
+
     turtle.tracer(1)
     tur.hideturtle()
 
@@ -140,18 +152,8 @@ def drawPolygon(polygonList, height, width):
             x = polygonList[i][j][0]
             y = polygonList[i][j][1]
 
-            if j + 1 < len(polygonList[i]):
-                nextX = polygonList[i][j + 1][0]
-                nextY =  polygonList[i][j + 1][1]
-                
-                stepX = stepY = 1
-                if x > nextX:
-                    stepX = -1
-                if y > nextY:
-                    stepY = -1
-                for r in range(x, nextX, stepX):
-                    for s in range(y, nextY, stepY):
-                        fillPixel(r, s, "red")
+            # kiem tra den diem n - 1
+            
     
     for i in range(len(polygonList)):
         for j in range(len(polygonList[i])):
@@ -169,7 +171,7 @@ def main():
     screen = turtle.Screen()
     screen.setup(width, height)
 
-    drawGrid(height=pixel[1], width=pixel[0])
+    drawGrid(height=pixel[1], width=pixel[0], startGoal=startGoal)
 
     blockedList = drawPolygon(polyList, pixel[1], pixel[0])
 
@@ -177,6 +179,8 @@ def main():
     # print(blockedList[2][2])
     # # for i in range(len(blockedList)):
     # #     print(blockedList[i])
+
+
     turtle.mainloop()
 
 main()
