@@ -194,7 +194,7 @@ def drawPolygon(polygonList, height, width):
                 y, nextY = nextY, y
                 check = 1
             if y != nextY:
-                s = y + 1
+                s = y 
                 while True:
                     if s > nextY:
                         break
@@ -208,26 +208,27 @@ def drawPolygon(polygonList, height, width):
             if check == 1:
                 yList.reverse()
 
-            # print(xList, yList)
-
+            print(xList, yList)
             if len(xList) != 1 and len(yList) != 1:
-                rangeVal = min(len(xList), len(yList))
+                rangeVal = max(len(xList), len(yList))
                 for q in range(0, rangeVal, 1):
-                    fillPixel(xList[q], yList[q], "green")
-                    a = xList[q]
-                    b = yList[q]
-                    blockedList[a][b] = '%'
-                    # print(xList[q], yList[q])
-                    # print(xList[width - q], yList[height - q])
+                    if len(xList) > len(yList):
+                        if(q >= len(yList)):
+                            fillPixel(xList[q], yList[len(yList) - 1], "green")
+                        else:
+                            fillPixel(xList[q], yList[q], "green")
+                    elif len(xList) < len(yList):
+                        if(q >= len(xList)):
+                            fillPixel(xList[len(xList) - 1], yList[q], "green")
+                        else:
+                            fillPixel(xList[q], yList[q], "green")      
+                    else:
+                        fillPixel(xList[q], yList[q], "green")      
             else:
                 for q in range(0, len(xList), 1):
                     for t in range(0, len(yList), 1):
                         fillPixel(xList[q], yList[t], "green")
-                        a = xList[q]
-                        b = yList[t]
-                        blockedList[a][b] = '%'
-                        # print(xList[width - q - 1], yList[height - t - 1])
-                        # print(xList[q], yList[t])
+                        # blockedList[xList[q]][yList[t]] = '%'
 
             # xList.clear()
             # yList.clear()
@@ -235,7 +236,7 @@ def drawPolygon(polygonList, height, width):
     for i in range(len(polygonList)):
         for j in range(len(polygonList[i])):
             fillPixel(polygonList[i][j][0], polygonList[i][j][1], "black") 
-            blockedList[polygonList[i][j][0]][polygonList[i][j][1]] = '%'
+            # blockedList[polygonList[i][j][0]][polygonList[i][j][1]] = '%'
 
     turtle.tracer(1)
     return blockedList
@@ -254,8 +255,8 @@ def main():
     blockedList = drawPolygon(polyList, pixel[1], pixel[0])
     # print(blockedList[0][1])
 
-    for i in blockedList:
-        print(i)
+    # for i in blockedList:
+    #     print(i)
 
     # print(len(blockedList))
     # print(blockedList[2][2])
