@@ -150,7 +150,7 @@ def fillPixel(x, y, color):
 def drawPolygon(polygonList, height, width):    
     turtle.tracer(0)
     # turtle.speed(0)
-    blockedList = [ [ '|' for i in range(width) ] for j in range(height) ]
+    blockedList = [ [ '.' for i in range(width) ] for j in range(height) ]
 
     for i in range(0, len(polygonList), 1):
         print("----")
