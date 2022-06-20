@@ -265,6 +265,7 @@ def main():
     blockedList[startGoal[1]][startGoal[0]] = '@'
     blockedList[startGoal[3]][startGoal[2]] = '@@'
 
+    blockedList.reverse()
     for i in blockedList:
         print(i)
     
