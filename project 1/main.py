@@ -215,20 +215,25 @@ def drawPolygon(polygonList, height, width):
                     if len(xList) > len(yList):
                         if(q >= len(yList)):
                             fillPixel(xList[q], yList[len(yList) - 1], "green")
+                            blockedList[yList[len(yList) - 1]][xList[q]] = '%'
                         else:
                             fillPixel(xList[q], yList[q], "green")
+                            blockedList[yList[q]][xList[q]] = '%'
                     elif len(xList) < len(yList):
                         if(q >= len(xList)):
                             fillPixel(xList[len(xList) - 1], yList[q], "green")
+                            blockedList[yList[q]][xList[len(xList) - 1]] = '%'
                         else:
-                            fillPixel(xList[q], yList[q], "green")      
+                            fillPixel(xList[q], yList[q], "green")   
+                            blockedList[yList[q]][xList[q]] = '%'
                     else:
                         fillPixel(xList[q], yList[q], "green")      
+                        blockedList[yList[q]][xList[q]] = '%'
             else:
                 for q in range(0, len(xList), 1):
                     for t in range(0, len(yList), 1):
                         fillPixel(xList[q], yList[t], "green")
-                        # blockedList[xList[q]][yList[t]] = '%'
+                        blockedList[yList[t]][xList[q]] = '%'
 
             # xList.clear()
             # yList.clear()
@@ -236,34 +241,33 @@ def drawPolygon(polygonList, height, width):
     for i in range(len(polygonList)):
         for j in range(len(polygonList[i])):
             fillPixel(polygonList[i][j][0], polygonList[i][j][1], "black") 
-            # blockedList[polygonList[i][j][0]][polygonList[i][j][1]] = '%'
+            blockedList[polygonList[i][j][1]][polygonList[i][j][0]] = '%'
 
     turtle.tracer(1)
     return blockedList
 
 def main():
     pixel, startGoal, numOfPoly, polyList = readInputFile(fname="input.txt")
-    height = 1000
-    width = 1680
+    screenHeight = 1000
+    screenWidth = 1680
 
+    matrixHeight = pixel[1]
+    matrixWidth = pixel[0]
     # init screen
     screen = turtle.Screen()
-    screen.setup(width, height)
+    screen.setup(screenWidth, screenHeight)
 
-    drawGrid(height=pixel[1], width=pixel[0], startGoal=startGoal)
+    drawGrid(height=matrixHeight, width=matrixWidth, startGoal=startGoal)
 
-    blockedList = drawPolygon(polyList, pixel[1], pixel[0])
+    blockedList = drawPolygon(polyList, matrixHeight, matrixWidth)
     # print(blockedList[0][1])
 
-    # for i in blockedList:
-    #     print(i)
+    blockedList[startGoal[1]][startGoal[0]] = '@'
+    blockedList[startGoal[3]][startGoal[2]] = '@@'
 
-    # print(len(blockedList))
-    # print(blockedList[2][2])
-    # # for i in range(len(blockedList)):
-    # #     print(blockedList[i])
-
-
+    for i in blockedList:
+        print(i)
+    
     turtle.mainloop()
 
 main()
