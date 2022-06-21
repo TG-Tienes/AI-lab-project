@@ -266,9 +266,14 @@ def main():
     blockedList[startGoal[3]][startGoal[2]] = '@@'
 
     blockedList.reverse()
-    for i in blockedList:
-        print(i)
+    f = open("output.txt", "w")
+    for i in range(matrixHeight):
+        for j in range(matrixWidth):
+            f.write(blockedList[i][j])
+        f.write('\n')
+        # print(i)
     
-    turtle.mainloop()
+
+   
 
 main()
