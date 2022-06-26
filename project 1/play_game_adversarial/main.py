@@ -50,7 +50,7 @@ while run:
 
     while runGame:
         screen.fill((255,255,255))
-        createTable(3)
+        createTable(5)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
