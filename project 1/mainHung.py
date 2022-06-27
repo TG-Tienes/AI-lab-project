@@ -1,11 +1,12 @@
-from collections import deque
-from multiprocessing.spawn import prepare
 from re import T
 from tabnanny import check
+from tracemalloc import start
 import turtle
-from matplotlib.pyplot import fill
+
+from queue import PriorityQueue
+from collections import deque
 import numpy as np
-import queue
+import time
 
 def readInputFile(fname):
     with open(fname) as f:
@@ -134,9 +135,8 @@ def drawGrid(height, width, startGoal):
     tur.hideturtle()
 
 def fillPixel(x, y, color):
-    turtle.tracer(0)
     tur = turtle.Turtle()
-    tur.speed(0)
+    turtle.tracer(0)
     tur.hideturtle()
 
     tur.fillcolor("cyan")
@@ -151,15 +151,15 @@ def fillPixel(x, y, color):
         tur.forward(35)
         tur.left(90)
     tur.end_fill()
-    turtle.tracer(1)
 
+    turtle.tracer(1);
 def drawPolygon(polygonList, height, width):    
     turtle.tracer(0)
     # turtle.speed(0)
-    blockedList = [ [ '.' for i in range(width) ] for j in range(height + 1) ]
+    blockedList = [ [ '.' for i in range(width) ] for j in range(height) ]
 
     for i in range(0, len(polygonList), 1):
-        # print("----")
+        print("----")
         for j in range(0, len(polygonList[i]), 1):
             x = polygonList[i][j][0]
             y = polygonList[i][j][1]
@@ -172,7 +172,7 @@ def drawPolygon(polygonList, height, width):
                 nextX = polygonList[i][j + 1][0]
                 nextY =  polygonList[i][j + 1][1]
 
-            # print(x, y, nextX, nextY)
+            print(x, y, nextX, nextY)
             xList = []
             yList = []
 
@@ -214,7 +214,7 @@ def drawPolygon(polygonList, height, width):
             if check == 1:
                 yList.reverse()
 
-            # print(xList, yList)
+            print(xList, yList)
             if len(xList) != 1 and len(yList) != 1:
                 rangeVal = max(len(xList), len(yList))
                 for q in range(0, rangeVal, 1):
@@ -252,104 +252,121 @@ def drawPolygon(polygonList, height, width):
     turtle.tracer(1)
     return blockedList
 
-# calc heuristics with height, width, goal
-def calcHeuristics(height, width, goal):
-    heuristicList = [ [ 0 for i in range(width) ] for j in range(height) ]
-    for i in range(height):
-        for j in range(width):
-            heuristicList[i][j] = abs(goal[0] - i) + abs(goal[1] - j)
-    return heuristicList
+# calc g for each from start
+def calcCost(blockedList,matrixHeight,matrixWidth,startGoal):
+    for i in range (matrixHeight):
+        for j in range (matrixWidth):
+            if (blockedList[i][j]!='%'):
+                blockedList[i][j]=(abs(i-startGoal[1])+abs(j-startGoal[0]))
+            else:
+                blockedList[i][j]='.'
+    return blockedList
 
-def SolveBFS(blockedList):
-    R, C = len(blockedList), len(blockedList[0])
+# check point x,y are valid or not 
+def checkRule(matrixHeight,matrixWidth,pointX,pointY):
+    return 0<pointY<matrixHeight-1 and 0<pointX<matrixWidth-1 
 
-    start = (0, 0)
-    for i in range(R):
-        for j in range(C):
-            if blockedList[i][j] == "@": #start
-                start = (i, j)
-                break
-        else:
-            continue
-        break
-    else:
-        return None
-    frontier = deque()
-    expanded = ""
-    frontier.append((start[0], start[1], 0, expanded))  #luu vtri diem dc expand va cost path tu start den diem do
-    direction = [[1, 0], [-1, 0], [0, -1], [0, 1]] #cac move set
-    visited = [[False] * C for i in range(R)] #tao mang chua di gan tat ca bang false
-    visited[start[0]][start[1]] = True #di qua thi gan lai bang true
-
-    # prevPix =  [[ (-1,-1) for i in range(C) ] for j in range(R + 1)]
-    # prev = (0,0)
-
-    while len(frontier) != 0:
-        pos = frontier.popleft() #bien luu toa do i, j trong ma tran
-        # print(pos)
-        # prevPix[int(prev[0])][int(prev[1])] = (pos[0],pos[1])
-
-        if blockedList[pos[0]][pos[1]] == "@@":
-           #Ve lai duong di roi return
-            break
-        if blockedList[pos[0]][pos[1]] == ".":
-            blockedList[pos[0]][pos[1]] = "*" #gan duong da di bang *
-            fillPixel(pos[1],R - 1 - pos[0], 'Purple')
-        for direct in direction: #1 diem co the di 4 vtri
-            expanded = ""
-
-            #vi tri diem tiep theo thu tu trai phai xuong 
-            nr, nc = pos[0] + direct[0], pos[1] + direct[1] 
-
-            #Neu diem da di qua bang % thi skip
-            if nr < 0 or nr >= R-1 or nc < 0 or nc >= C or visited[nr][nc] == True or blockedList[nr][nc] == '%':
-                continue
-            if ((nr > 0 and nr < R) and (nc > 0 and nc < C)): 
-                if direct[0] == 1:
-                    expanded = expanded + " U"
-                if direct[0] == -1:
-                    expanded = expanded + " D"
-                if direct[1] == 1:
-                    expanded = expanded + " R"
-                if direct[1] == -1:
-                    expanded = expanded + " L"
-
-                visited[nr][nc] = True
-                frontier.append((nr, nc, pos[2]+1, pos[3] + expanded))
-        # prev = pos
-    
-    
-    # fillPixel(prev[1],R - 1 - prev[0], 'yellow')
-
-    s = pos[3]
-    str = ""
-    for i in s:
-        str = i + str
-    print(str)
-    x, y = pos[1], R - 1 - pos[0]
-    print(x,y)
-    for i in range(len(str)):  
-        fillPixel(x, y, "cyan")
-        if str[i] == 'D':
-            x, y = x, y - 1
-        elif str[i] == 'U':
-            x, y = x, y + 1
-        elif str[i] == 'R':
-            x, y = x - 1, y
-        elif str[i] == 'L':
-            x, y = x + 1, y
+# def UCSs(arrayCost,matrixHeight,matrixWidth,startGoal):
+#     queue= PriorityQueue()
+#     queue.put((arrayCost[startGoal[1]][startGoal[0]],(startGoal[1],startGoal[0],"Start")))
+#     visited=np.full((matrixHeight, matrixWidth), True, dtype=bool)
+#     # visited[startGoal[1]][startGoal[0]]=True
+#     path=[]
+#     i=0
+#     while True:
+#         # time.sleep(0.5)
+#         i=i+1
+#         if not queue:
+#             break
+#         agentCost,agentPos=queue.get()
+#         print("=====")
+#         print("Loop: ",i)
+#         print("Move: ",agentPos[2])
+#         # print(agentCost)
+#         # print(agentPos[0])
+#         # print(agentPos[1])
+#         # print(path)
+#         fillPixel(agentPos[1],agentPos[0],"BLUE")
         
-            
-    # print(prevPix)
+#         # if not visited[agentPos[1]][agentPos[0]]:
+#         #     fillPixel(agentPos[1],agentPos[0],"RED")
+#         if(agentPos[0]==startGoal[2]and agentPos[1]==startGoal[3]):
+#             print("done")
+#             break
+#         x,y,w1=moveUp(agentPos[1],agentPos[0])
+#         z,p,w2=moveDown(agentPos[1],agentPos[0])
+#         a,b,w3=moveLeft(agentPos[1],agentPos[0])
+#         c,d,w4=moveRight(agentPos[1],agentPos[0])
+#         if checkRule(matrixHeight,matrixWidth,x,y) and arrayCost[x][y]!='.':
+#             if visited[x][y]:
+#                 queue.put((arrayCost[y][x],(x,y,w1)))
+#                 visited[x][y]=False
+#         if checkRule(matrixHeight,matrixWidth,z,p) and arrayCost[z][p]!='.':
+#             if visited[z][p]:
+#                 queue.put((arrayCost[p][z],(z,p,w2)))
+#                 visited[z][p]=False
+#         if checkRule(matrixHeight,matrixWidth,a,b)and arrayCost[a][b]!='.':
+#             if visited[a][b]:
+#                 queue.put((arrayCost[b][a],(a,b,w3)))
+#                 visited[a][b]=False
+#         if checkRule(matrixHeight,matrixWidth,c,d)and arrayCost[c][d]!='.':
+#             if visited[c][d]:
+#                 queue.put((arrayCost[d][c],(c,d,w4)))
+#                 visited[c][d]=False
+#         print(queue.queue)
+#         # time.sleep(1)
+#     return path
+   
 
-    # for i in range(0, len(prevPix), 1):
-    #     for j in range(0, len(prevPix[0]), 1):
-    #         if prevPix[i][j] == cur:
-    #             cur = (i,j)
-    #             a.append(cur)
-    #             i, j = 0, 0
-    #             continue
+def UCS(arrayCost,x,y,matrixHeight,matrixWidth):
+    dict={}
+    frontier=PriorityQueue()
+    frontier.put((arrayCost[x][y],(x,y)))
+    visited=set()
+    
+    dict[x,y]=x,y
+    i=0
+    j=0
+    while frontier:
+        i=i+1
+       
+        print("===")
+        print("Loop: ",i)
+        cost,pos=frontier.get()
+        fillPixel(x,y,"RED")
+        y, x = pos 
         
+        print("X: ",x)
+        print("Y: ",y)
+        print("Cost:",cost)
+        print("J: ",j)
+        # print(dict)
+        # time.sleep(2)
+        if (x,y) not in visited:
+            fillPixel(x,y,"BLUE")
+            j=j+1
+        if arrayCost[x][y]=="@@":
+            return True
+        if checkRule(matrixHeight,matrixWidth,x+1,y) and (x+1,y) not in visited and arrayCost[x+1][y]!="." : # check move Up
+            dict[x+1,y]=x,y
+            frontier.put((arrayCost[x+1][y],(x+1,y)))
+            visited.add((x+1,y))
+        if checkRule(matrixHeight,matrixWidth,x-1,y) and (x-1,y) not in visited and arrayCost[x-1][y]!="." : # check move Down
+            dict[x-1,y]=x,y
+            frontier.put((arrayCost[x-1][y],(x-1,y)))
+            visited.add((x-1,y))
+        if checkRule(matrixHeight,matrixWidth,x,y-1) and (x,y-1) not in visited and arrayCost[x][y-1]!="." : # check move Left
+            dict[x,y-1]=x,y
+            frontier.put((arrayCost[x][y-1],(x,y-1)))
+            visited.add((x,y-1))
+        if checkRule(matrixHeight,matrixWidth,x,y+1) and (x,y+1) not in visited and arrayCost[x][y+1]!="." : # check move Right
+            dict[x,y+1]=x,y
+            frontier.put((arrayCost[x][y+1],(x,y+1)))
+            visited.add((x,y+1))
+    
+    return True
+
+   
 def main():
     pixel, startGoal, numOfPoly, polyList = readInputFile(fname="input.txt")
     screenHeight = 1000
@@ -368,16 +385,29 @@ def main():
 
     blockedList[startGoal[1]][startGoal[0]] = '@'
     blockedList[startGoal[3]][startGoal[2]] = '@@'
-    for i in range(len(blockedList[0])):
-        blockedList[len(blockedList) - 1][i] = '%'
-        blockedList[0][i] = '%'
-    blockedList.reverse()
-    SolveBFS(blockedList)
     
+    
+    calcCost(blockedList,matrixHeight,matrixWidth,startGoal)
+    UCS(blockedList,2,2,matrixHeight,matrixWidth)
+    # arrayCost =np.copy(blockedList)
+   
+    # print("block:")
     # blockedList.reverse()
     # for i in blockedList:
     #     print(i)
     
-    turtle.mainloop()
+    
+    # calcCost(arrayCost,matrixHeight,matrixWidth,startGoal)
+    # print("calcCost:")
+    
+    # print(arrayCost[16][19])
 
+    # print(arrayHeu[16][19])
+    # print("test usc :")
+    # # 
+    # print(arrayCost[4][4])
+    # UCS(arrayCost,2,2,matrixHeight,matrixWidth)
+    # print(startGoal[1],startGoal[0])
+    turtle.mainloop()
+    
 main()
