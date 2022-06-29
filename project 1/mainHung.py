@@ -386,7 +386,28 @@ def main():
     blockedList[startGoal[1]][startGoal[0]] = '@'
     blockedList[startGoal[3]][startGoal[2]] = '@@'
     
+    insidePoly = []
+    check = 0
+    for i in range(len(blockedList)):
+        for j in range(len(blockedList[0])):
+            if blockedList[i][j] == '%':
+                if check == 0:
+                    startX = j
+                    check = 1
+                elif check == 1:
+                    endX = j
+                    check = 0
+                    insidePoly.append((i, startX, endX))
     
+
+    for i in range(len(insidePoly)):
+        start, end = insidePoly[i][1], insidePoly[i][2]
+        if insidePoly[i][1] > insidePoly[i][2]:
+            start, end = insidePoly[i][2], insidePoly[i][1]
+
+        for j in range(start, end, 1):
+            blockedList[insidePoly[i][0]][j] = '%'
+            
     calcCost(blockedList,matrixHeight,matrixWidth,startGoal)
     UCS(blockedList,2,2,matrixHeight,matrixWidth)
     # arrayCost =np.copy(blockedList)

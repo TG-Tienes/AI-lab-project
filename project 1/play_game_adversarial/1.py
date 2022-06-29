@@ -1,3 +1,4 @@
+import time
 # Python3 program to find the next optimal move for a player
 player, opponent = 'x', 'o'
  
@@ -57,7 +58,10 @@ def evaluate(b) :
 # the value of the board
 def minimax(board, depth, isMax) :
     score = evaluate(board)
- 
+    # for i in board:
+    #     print(i)
+    # print()
+    time.sleep(1)
     # If Maximizer has won the game return his/her
     # evaluated score
     if (score == 10) :
@@ -92,7 +96,8 @@ def minimax(board, depth, isMax) :
                     best = max( best, minimax(board,
                                               depth + 1,
                                               not isMax) )
- 
+                    print(best)
+
                     # Undo the move
                     board[i][j] = '_'
         return best
@@ -114,7 +119,8 @@ def minimax(board, depth, isMax) :
                     # Call minimax recursively and choose
                     # the minimum value
                     best = min(best, minimax(board, depth + 1, not isMax))
- 
+                    print(best)
+
                     # Undo the move
                     board[i][j] = '_'
         return best
@@ -149,14 +155,16 @@ def findBestMove(board) :
                 if (moveVal > bestVal) :               
                     bestMove = (i, j)
                     bestVal = moveVal
+                
  
     print("The value of the best Move is :", bestVal)
     print()
     return bestMove
+
 # Driver code
 board = [
-    [ 'x', 'o', 'x' ],
-    [ 'o', 'o', 'x' ],
+    [ 'o', '_', '_' ],
+    [ '_', '_', '' ],
     [ '_', '_', '_' ]
 ]
  

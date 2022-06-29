@@ -46,9 +46,9 @@ def createTable(size):
 # Danh dau o (di)
 def markSquare(row, col, type):
     if type == 'X':
-        screen.blit(Ximg, (originalX + row * 90 + 0.5, originalY + col * 90 + 0.95))
+        screen.blit(Ximg, (originalX + col * 90 + 0.5, originalY + row * 90 + 0.95))
     elif type == 'O':
-        screen.blit(Oimg, (originalX + row * 90 + 0.5, originalY + col * 90 + 0.95))
+        screen.blit(Oimg, (originalX + col * 90 + 0.5, originalY + row * 90 + 0.95))
 
 # Chuyen tu vi tri cua con tro chuot sang vi tri cua tung o trong ban co
 def convertToPos(mouse, pointList):
@@ -131,7 +131,7 @@ playGame = True
 
 tableSize = 3
 tableMatrix = [['.' for i in range(tableSize)] for j in range(tableSize)]
-turn = 1
+turn = 0
 playerSymbol = 'X'
 botSymbol = 'O'
 
@@ -204,8 +204,6 @@ while run:
             turn = 0
             break
 
-        
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -222,7 +220,7 @@ while run:
                 if turn == 0:
                     # Nam trong ban co
                     if mouse[0] in range(originalX, originalX + tableSize * 90) and mouse[1] in range(originalY, originalY + tableSize * 90):        
-                        x, y = convertToPos(mouse, pointList)
+                        y,x = convertToPos(mouse, pointList)
 
                         if tableMatrix[x][y] == '.' and turn == 0:
                             tableMatrix[x][y] = playerSymbol

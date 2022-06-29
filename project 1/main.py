@@ -371,12 +371,45 @@ def main():
     for i in range(len(blockedList[0])):
         blockedList[len(blockedList) - 1][i] = '%'
         blockedList[0][i] = '%'
+
+    insidePoly = []
+    check = 0
+    for i in range(1, len(blockedList)):
+        check = 0
+        for j in range(len(blockedList[0])):
+            if blockedList[i][j] == '%':
+                if j + 1 < len(blockedList[0]) and blockedList[i][j+1] == '%' and j + 2 < len(blockedList[0]) and blockedList[i][j+2] == '.':
+                    continue
+                if check == 0:
+                    startX = j
+                    check = 1
+                elif check == 1:
+                    endX = j
+                    check = 0
+                    insidePoly.append((i, startX, endX))
+    
+
+    for i in range(len(insidePoly)):
+        start, end = insidePoly[i][1], insidePoly[i][2]
+       
+        for j in range(start, end, 1):
+            blockedList[insidePoly[i][0]][j] = '%'
+
+    # f = open('output.txt','w')
+
+    # for i in range(len(blockedList)):
+    #     for j in range(len(blockedList[0])):
+    #         f.write(blockedList[i][j])
+    #     f.write('\n')
+
     blockedList.reverse()
-    SolveBFS(blockedList)
+    # SolveBFS(blockedList)
     
     # blockedList.reverse()
-    # for i in blockedList:
-    #     print(i)
+    for i in insidePoly:
+        print(i)
+    for i in blockedList:
+        print(i)
     
     turtle.mainloop()
 
