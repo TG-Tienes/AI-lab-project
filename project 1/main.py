@@ -403,13 +403,13 @@ def main():
     #     f.write('\n')
 
     blockedList.reverse()
-    # SolveBFS(blockedList)
+    SolveBFS(blockedList)
     
     # blockedList.reverse()
-    for i in insidePoly:
-        print(i)
-    for i in blockedList:
-        print(i)
+    # for i in insidePoly:
+    #     print(i)
+    # for i in blockedList:
+    #     print(i)
     
     turtle.mainloop()
 
