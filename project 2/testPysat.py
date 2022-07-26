@@ -31,10 +31,19 @@ from pysat.solvers import Solver, Glucose3
 
 test = Glucose3()
 
+U = list()
+for i in range(2,5):
+    U.append(i)
+
+
+
+
+
 test.add_clause([-1 , 2 , 3])
 test.add_clause([-1 , -1])
 test.add_clause([3 , -1])
 test.add_clause([-1 , -1 , -1])
+test.add_clause([int(i) for i in U])
 
 # test.add_clause([1 , -2 , -3])
 # test.add_clause([1 , 1])
