@@ -13,7 +13,7 @@ def show():
   
 # Dropdown menu options
 options = [
-    "Monday",
+    # "Monday",
     "Tuesday",
     "Wednesday",
     "Thursday",
@@ -41,3 +41,13 @@ label.pack()
   
 # Execute tkinter
 root.mainloop()
+
+
+
+# import numpy as np
+
+# a = np.arange(12).reshape(3, 4)
+
+# a = np.delete(a, 0, 0)
+
+# print(a)

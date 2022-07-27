@@ -3,6 +3,7 @@ import tkinter as tk
 import tkinter.filedialog as tkFileDiaglog
 import numpy as np
 from pysat.solvers import Glucose3
+from tkinter import *
 
 
 class app(tk.Frame):
@@ -10,16 +11,25 @@ class app(tk.Frame):
         tk.Frame.__init__(self, root)
         self.root = root
         self.root.geometry("1280x960")
-        self.fileDir = "asdasdsadsa"
+        self.fileDir = ""
+        options = ["pySat", "Backtracking (DPLL)", "Brute Force" ,"A*"]
 
-        tk.Button(self.root, text="Browse", command= lambda : self.readInputFile()).pack(pady=5,padx=20,ipadx=50)
+        self.choice = StringVar()
+        self.choice.set('pySat')
+
+        # tk.Button(self.root, text="Browse", command= lambda : self.readInputFile()).pack(pady=5,padx=20,ipadx=50)
+        tk.Button(self.root, text="Browse", command= lambda : self.readInputFile()).place(relx=0.7, rely=0.038)
+
 
         self.textBox_fileDir = tk.Text(self.root, height = 1, width = 52)
-        self.textBox_fileDir.pack(pady=0)
+        self.textBox_fileDir.place(relx=0.5, rely=0.05,anchor=tk.CENTER)
         self.textBox_fileDir.config(state='disabled')
 
-        self.myCanvas = tk.Canvas(root, bg="white", height= 0, width= 0)
-        tk.Button(self.root, text="Start", command= lambda : self.pySat()).pack(pady=5,padx=20,ipadx=50,ipady=20)
+        self.myCanvas = tk.Canvas(self.root, bg="white", height= 0, width= 0)
+        tk.Button(self.root, text="START", command= lambda : self.menu()).place(relx=0.3, rely=0.1, anchor=tk.NW)
+
+        drop = tk.OptionMenu(self.root , self.choice , *options )
+        drop.place(relx=0.5, rely=0.2, anchor=tk.NW)
 
     def readInputFile(self):
         self.myCanvas.destroy()
@@ -49,7 +59,7 @@ class app(tk.Frame):
     def drawBoard(self):
         squareSize = 40
         canvasHeight, canvasWidth = self.matrixRow * squareSize, self.matrixCol * squareSize
-        self.myCanvas = tk.Canvas(root, bg="white", height= canvasHeight, width= canvasWidth)
+        self.myCanvas = tk.Canvas(self.root, bg="white", height= canvasHeight, width= canvasWidth)
         
         y0, y1 = 2, squareSize+1
         for i in range(self.matrixRow):
@@ -145,12 +155,17 @@ class app(tk.Frame):
                 if i * self.matrixRow + j + 1 in self.model:
                     self.finalMatrix[i][j] = 1
 
-        self.drawBoard()
 
+    def menu(self):
+        choice = self.choice.get()
+        if choice == "pySat":
+            self.pySat()
+        self.drawBoard()
+        
 
 if __name__ == "__main__":
     root = tk.Tk()
 
     app(root).pack(side="top", fill="both", expand=True)
-
+    
     root.mainloop()
