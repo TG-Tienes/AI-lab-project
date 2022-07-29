@@ -1,4 +1,6 @@
-from itertools import combinations
+from ast import Assign
+from itertools import combinations, product
+from statistics import mode
 import tkinter as tk
 import tkinter.filedialog as tkFileDiaglog
 import numpy as np
@@ -126,11 +128,10 @@ class app(tk.Frame):
 
         return clauses
 
-    def pySat(self):
-        self.initMatrix()
+    def pySat(self, CNF):
         glu = Glucose3()
         
-        clauses = self.createCNF()
+        clauses = CNF.copy()
         for clause in clauses:
             glu.add_clause(clause)
 
@@ -147,19 +148,41 @@ class app(tk.Frame):
         
         glu.solve()
 
-        self.model = glu.get_model()
+        model = glu.get_model()
         # print(self.model)
 
-        for i in range(self.matrixRow):
+        self.assignFinalMatrix(model)
+
+    def Brute_force(self, CNF):
+        literals = []
+        for clause in CNF:
+            for literal in clause:
+                literals.append(abs(literal))
+        literals = np.unique(np.asarray(literals))
+
+        n = len(literals)
+        for sequence in product([1, -1], repeat=n):
+            a = np.asarray(sequence) * np.asarray(literals)
+            if all([bool(set(disj).intersection(set(a))) for disj in CNF]):
+                self.assignFinalMatrix(a)
+                return
+
+    def assignFinalMatrix(self, model):
+          for i in range(self.matrixRow):
             for j in range(self.matrixCol):
-                if i * self.matrixRow + j + 1 in self.model:
+                if i * self.matrixRow + j + 1 in model:
                     self.finalMatrix[i][j] = 1
 
-
     def menu(self):
+        self.initMatrix()
+        CNF = self.createCNF()
+
         choice = self.choice.get()
         if choice == "pySat":
-            self.pySat()
+            self.pySat(CNF)
+        if choice == "Brute Force":
+            self.Brute_force(CNF)
+
         self.drawBoard()
         
 
